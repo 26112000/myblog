@@ -14,7 +14,7 @@ contactRouter.get("/", async (req: Request, res: Response) => {
     res.status(200).json({ data: messages });
   });
 });
-contactRouter.get("/1", async (req: Request, res: Response) => {
+contactRouter.get("/id", async (req: Request, res: Response) => {
 
  contactModel .findAll((err: Error, messages: Contact []) => {
     if (err) {
