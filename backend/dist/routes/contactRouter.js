@@ -48,3 +48,11 @@ contactRouter.get("/", (req, res) => __awaiter(void 0, void 0, void 0, function*
         res.status(200).json({ data: messages });
     });
 }));
+contactRouter.get("/id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    contactModel.findAll((err, messages) => {
+        if (err) {
+            return res.status(500).json({ errorMessage: err.message });
+        }
+        res.status(200).json({ data: messages });
+    });
+}));

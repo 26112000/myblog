@@ -1,10 +1,14 @@
-import React from "react";
+import React, { useState} from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { Container, Row, Col, FormGroup, Button } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
+import axios from "axios";
+import configData from "../config.json";
+import { useNavigate } from "react-router-dom";
 
 const ContactPage = () => {
+  let navigate = useNavigate();
   // Schema de validare pentru formular
   const validationSchema = Yup.object().shape({
     firstName: Yup.string().required("Nume este obligatoriu!"),
@@ -16,15 +20,35 @@ const ContactPage = () => {
   });
 
   // Handler pentru trimiterea formularului
-  const handleSubmit = (values, { setSubmitting }) => {
-    setSubmitting(true);
-    // Aici poți adăuga logica de trimitere a datelor (ex. trimite un email sau salvează într-o bază de date)
-    console.log(values);
-    setTimeout(() => {
-      alert("Mesaj trimis cu succes!");
-      setSubmitting(false);
-    }, 1000);
+   const handleSubmit = (event) => {
+    console.log(formData);
+    axios
+    .post(configData.SERVER_CONTACT_URL, formData)
+    .then((res) => {
+      if (res.status === 200) {
+        alert("User successfully created");
+        console.log(res.message);
+        
+        navigate("/");
+      } else Promise.reject();
+    })
+    .catch((err) => {
+      alert("Something went wrong");
+      console.log(err.response.data);
+    });
   };
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    message: "",
+  });
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+  
 
   return (
     <Container className="my-5">
@@ -42,13 +66,9 @@ const ContactPage = () => {
         <Col md={6}>
           <h2>Trimite-ne un mesaj</h2>
           <Formik
-            initialValues={{
-              firstName: "",
-              lastName: "",
-              email: "",
-              message: "",
-            }}
+            initialValues={formData}
             validationSchema={validationSchema}
+            enableReinitialize
             onSubmit={handleSubmit}
           >
             {({ isSubmitting }) => (
@@ -60,6 +80,7 @@ const ContactPage = () => {
                     type="text"
                     className="form-control"
                     placeholder="Nume"
+                    onChange={handleInputChange}
                   />
                   <ErrorMessage
                     name="firstName"
@@ -75,6 +96,7 @@ const ContactPage = () => {
                     type="text"
                     className="form-control"
                     placeholder="Prenume"
+                    onChange={handleInputChange}
                   />
                   <ErrorMessage
                     name="lastName"
@@ -90,6 +112,7 @@ const ContactPage = () => {
                     type="email"
                     className="form-control"
                     placeholder="Email"
+                    onChange={handleInputChange}
                   />
                   <ErrorMessage
                     name="email"
@@ -106,6 +129,7 @@ const ContactPage = () => {
                     className="form-control"
                     placeholder="Scrie mesajul tău aici..."
                     rows="4"
+                    onChange={handleInputChange}
                   />
                   <ErrorMessage
                     name="message"
